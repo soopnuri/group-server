@@ -1,34 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { CommunitiesService } from './communities.service';
+import { ApiOperation } from '@nestjs/swagger';
+import { JoinCommunityDto } from './dto/join-community-dto';
 import { CreateCommunityDto } from './dto/create-community.dto';
-import { UpdateCommunityDto } from './dto/update-community.dto';
 
 @Controller('communities')
 export class CommunitiesController {
   constructor(private readonly communitiesService: CommunitiesService) {}
 
   @Post()
-  create(@Body() createCommunityDto: CreateCommunityDto) {
-    return this.communitiesService.create(createCommunityDto);
+  @ApiOperation({ summary: '커뮤니티 생성' })
+  create(@Body() communityDto: CreateCommunityDto) {
+    return this.communitiesService.create(communityDto);
   }
 
   @Get()
+  @ApiOperation({ summary: '전체 커뮤니티 가져오기' })
   findAll() {
     return this.communitiesService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: '커뮤니티 가져오기' })
   findOne(@Param('id') id: string) {
     return this.communitiesService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommunityDto: UpdateCommunityDto) {
-    return this.communitiesService.update(+id, updateCommunityDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.communitiesService.remove(+id);
+  @Post('/join')
+  @ApiOperation({ summary: '커뮤니티 가입' })
+  join(@Body() joinDto: JoinCommunityDto) {
+    return this.communitiesService.join(joinDto);
   }
 }
