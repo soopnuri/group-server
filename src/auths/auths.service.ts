@@ -16,6 +16,7 @@ export class AuthsService {
     if (!user) {
       await this.prisma.user.create({
         data: {
+          googleId: createAuthDto.googleId,
           email: createAuthDto.email,
           name: createAuthDto.name,
           image: createAuthDto.image,
