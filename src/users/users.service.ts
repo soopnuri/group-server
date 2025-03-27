@@ -1,27 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-// import { UpdateAuthDto } from './dto/update-auth.dto';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async update(UpdateUserDto: UpdateUserDto) {
+  async update(UserDto: UserDto) {
     const user = await this.prisma.user.findUnique({
       where: {
-        email: UpdateUserDto.email,
+        email: UserDto.email,
       },
     });
 
     if (user) {
       await this.prisma.user.update({
         where: {
-          email: UpdateUserDto.email,
+          email: UserDto.email,
         },
         data: {
-          name: UpdateUserDto.name,
-          image: UpdateUserDto.image,
+          name: UserDto.name,
+          image: UserDto.image,
         },
       });
       return { message: '수정에 성공 했습니다.' };
@@ -30,12 +29,23 @@ export class UsersService {
     }
   }
 
-  async findOne(email: string) {
+  async findAll() {
+    const users = await this.prisma.user.findMany();
+    return { message: '조회에 성공했습니다.', data: users };
+  }
+
+  async findOne(number: number) {
     const user = await this.prisma.user.findUnique({
       where: {
-        email: email,
+        id: number,
+      },
+      include: {
+        communities: true,
+        communityRoles: true,
       },
     });
+
+    console.log(user);
 
     if (user) {
       return { message: '조회에 성공했습니다.', data: user };
