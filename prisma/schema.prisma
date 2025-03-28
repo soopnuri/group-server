@@ -25,6 +25,7 @@ model User {
   // 사용자 커뮤니티 역할 목록 one-to-many
   communityRoles UserCommunityRole[]
   posts Post[]
+  refreshToken String?
 }
 
 model Community {
