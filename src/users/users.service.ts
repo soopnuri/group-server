@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { UserDto } from './dto/user.dto';
 
@@ -45,13 +45,11 @@ export class UsersService {
       },
     });
 
-    console.log(user);
-
-    if (user) {
-      return { message: '조회에 성공했습니다.', data: user };
-    } else {
-      return { message: '존재하지 않는 유저입니다.' };
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
+
+    return { message: '조회에 성공했습니다.', data: user };
   }
 
   async remove(id: number) {
@@ -61,15 +59,15 @@ export class UsersService {
       },
     });
 
-    if (user) {
-      await this.prisma.user.delete({
-        where: {
-          id: id,
-        },
-      });
-      return { message: '삭제에 성공했습니다.' };
-    } else {
-      return { message: '삭제에 실패했습니다.' };
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
+
+    await this.prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
+    return { message: '삭제에 성공했습니다.' };
   }
 }
