@@ -22,8 +22,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     response.status(status).json({
-      statusCode: status,
+      success: false,
       message: message,
+      data: {},
     });
   }
 }
