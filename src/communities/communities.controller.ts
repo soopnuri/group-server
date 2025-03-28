@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseGuards } from '@nestjs/common';
 import { CommunitiesService } from './communities.service';
 import { ApiOperation } from '@nestjs/swagger';
 import { JoinCommunityDto } from './dto/join-community-dto';
 import { CreateCommunityDto } from './dto/create-community.dto';
-
+import { JwtAuthGuard } from 'src/auths/strategies/jwt.strategy';
+@UseGuards(JwtAuthGuard)
 @Controller('communities')
 export class CommunitiesController {
   constructor(private readonly communitiesService: CommunitiesService) {}
