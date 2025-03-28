@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { CreateCommunityRuleDto } from './create-rule.dto';
 
 export class CreateCommunityDto {
   @IsNotEmpty()
@@ -15,6 +22,10 @@ export class CreateCommunityDto {
   @IsNotEmpty()
   @IsString()
   slug: string;
+
+  @IsOptional()
+  @IsArray()
+  rules?: CreateCommunityRuleDto[];
 
   // relations
   // members: string[];

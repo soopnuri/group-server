@@ -1,9 +1,18 @@
-import { Controller, Post, Body, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  UseGuards,
+  Patch,
+} from '@nestjs/common';
 import { CommunitiesService } from './communities.service';
 import { ApiOperation } from '@nestjs/swagger';
 import { JoinCommunityDto } from './dto/join-community-dto';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { JwtAuthGuard } from 'src/auths/strategies/jwt.strategy';
+import { UpdateCommunityDto } from './dto/update-community.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('communities')
 export class CommunitiesController {
@@ -13,6 +22,15 @@ export class CommunitiesController {
   @ApiOperation({ summary: '커뮤니티 생성' })
   create(@Body() communityDto: CreateCommunityDto) {
     return this.communitiesService.create(communityDto);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: '커뮤니티 수정' })
+  update(
+    @Param('id') id: string,
+    @Body() updateCommunityDto: UpdateCommunityDto,
+  ) {
+    return this.communitiesService.update(+id, updateCommunityDto);
   }
 
   @Get()

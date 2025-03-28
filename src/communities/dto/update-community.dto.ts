@@ -1,4 +1,12 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateCommunityDto } from './create-community.dto';
+import { IsArray, IsOptional, IsString } from 'class-validator';
+import { CreateCommunityRuleDto } from './create-rule.dto';
 
-export class UpdateCommunityDto extends PartialType(CreateCommunityDto) {}
+export class UpdateCommunityDto {
+  @IsOptional()
+  @IsString()
+  description: string;
+
+  @IsOptional()
+  @IsArray()
+  rules: CreateCommunityRuleDto[];
+}

@@ -35,13 +35,23 @@ model Community {
   description String
   slug String @unique
   members User[] @relation("UserCommunities")
-  rules String[]
   moderators Int[]
   // 커뮤니티 사용자 역할 목록 one-to-many
   communityRoles UserCommunityRole[]
   // 커뮤니티에 속한 게시물 목록 one-to-many
   posts Post[]
+  // 커뮤니티에 속한 규칙 목록 one-to-many
+  rules CommunityRule[]
   createdAt DateTime @default(now())
+}
+
+model CommunityRule {
+  id Int @id @default(autoincrement())
+  // onDelete: Cascade 커뮤니티가 삭제될 경우 규칙도 삭제된다.
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId Int
+  title String
+  description String
 }
 
 model UserCommunityRole {
