@@ -41,7 +41,6 @@ export class AuthsService {
     }
 
     const tokens = await this.getTokens(user.id, user.email);
-
     if (tokens) {
       await this.prisma.user.update({
         where: {

@@ -169,7 +169,7 @@ export class CommunitiesService {
    * 커뮤니티 전체 조회
    */
   async findAll() {
-    return await this.prisma.community.findMany();
+    return { data: await this.prisma.community.findMany() };
   }
 
   /**

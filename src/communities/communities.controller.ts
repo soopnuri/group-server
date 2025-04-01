@@ -13,18 +13,19 @@ import { JoinCommunityDto } from './dto/join-community-dto';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { JwtAuthGuard } from 'src/auths/strategies/jwt.strategy';
 import { UpdateCommunityDto } from './dto/update-community.dto';
-@UseGuards(JwtAuthGuard)
 @Controller('communities')
 export class CommunitiesController {
   constructor(private readonly communitiesService: CommunitiesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '커뮤니티 생성' })
   create(@Body() communityDto: CreateCommunityDto) {
     return this.communitiesService.create(communityDto);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '커뮤니티 수정' })
   update(
     @Param('id') id: string,
@@ -46,6 +47,7 @@ export class CommunitiesController {
   }
 
   @Post('/join')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '커뮤니티 가입' })
   join(@Body() joinDto: JoinCommunityDto) {
     return this.communitiesService.join(joinDto);
