@@ -6,9 +6,12 @@ import { PrismaService } from 'src/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshJwtStrategy } from './strategies/refresh-token.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy: 'google' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
@@ -18,7 +21,13 @@ import { RefreshJwtStrategy } from './strategies/refresh-token.strategy';
     }),
   ],
   controllers: [AuthsController],
-  providers: [AuthsService, JwtStrategy, RefreshJwtStrategy, PrismaService],
+  providers: [
+    AuthsService,
+    JwtStrategy,
+    RefreshJwtStrategy,
+    PrismaService,
+    GoogleStrategy,
+  ],
   exports: [AuthsService],
 })
 export class AuthsModule {}

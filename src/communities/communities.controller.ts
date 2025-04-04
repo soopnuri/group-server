@@ -40,16 +40,17 @@ export class CommunitiesController {
     return this.communitiesService.findAll();
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: '커뮤니티 가져오기' })
-  findOne(@Param('id') id: string) {
-    return this.communitiesService.findOne(+id);
-  }
+  // @Get(':id')
+  // @ApiOperation({ summary: '커뮤니티 가져오기' })
+  // findOne(@Param('id') id: string) {
+  //   return this.communitiesService.findOne(+id);
+  // }
 
   @Post('/join')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '커뮤니티 가입' })
   join(@Body() joinDto: JoinCommunityDto) {
+    console.log('/join', joinDto);
     return this.communitiesService.join(joinDto);
   }
 }

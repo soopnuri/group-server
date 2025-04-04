@@ -53,16 +53,24 @@ export class AuthsService {
     }
 
     return {
-      data: {
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-        },
-        ...tokens,
-      },
+      ...tokens,
     };
+  }
+
+  async getUser(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        email: true,
+        image: true,
+        name: true,
+      },
+    });
+
+    return { data: user };
   }
 
   async getTokens(userId: number, email: string) {
@@ -72,7 +80,7 @@ export class AuthsService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(accessTokenPayload, {
         secret: this.configService.get<string>('JWT_SECRET'),
-        expiresIn: '1d',
+        expiresIn: 1 * 60,
       }),
       this.jwtService.signAsync(refreshTokenPayload, {
         secret: this.configService.get<string>('JWT_SECRET'),
@@ -99,6 +107,7 @@ export class AuthsService {
 
     const tokens = await this.getTokens(user.id, user.email);
 
+    console.log('tokens-최신업데이트', tokens);
     if (tokens) {
       await this.prisma.user.update({
         where: {
