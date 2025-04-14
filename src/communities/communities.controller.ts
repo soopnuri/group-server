@@ -50,7 +50,6 @@ export class CommunitiesController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '커뮤니티 가입' })
   join(@Body() joinDto: JoinCommunityDto) {
-    console.log('/join', joinDto);
     return this.communitiesService.join(joinDto);
   }
 }

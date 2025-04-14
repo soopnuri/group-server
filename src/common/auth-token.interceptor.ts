@@ -22,7 +22,6 @@ export class AuthTokenInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((responseData: AuthResponseData | any) => {
         const data = responseData.data || responseData;
-        console.log('토큰을 제공합니다.', data);
 
         // if (data && data.accessToken && data.refreshToken) {
         // refreshToken 분리

@@ -13,7 +13,6 @@ const cookieExtractor = (req: Request): string | null => {
     // 'accessToken'은 백엔드에서 쿠키를 설정할 때 사용한 이름이어야 합니다.
     token = req.cookies['accessToken'];
   }
-  console.log('Cookie Extractor - Token found:', token ? 'Yes' : 'No'); // 쿠키 추출 로그
   return token;
 };
 
@@ -34,7 +33,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   // Passport가 cookieExtractor로 토큰을 얻고 검증한 후, payload를 여기에 전달합니다.
   async validate(payload: any) {
     // req 객체가 필요하면 validate(req: Request, payload: any) 시그니처를 사용하고 super에 passReqToCallback: true 설정 필요
-    console.log('JwtStrategy validate called with payload:', payload);
 
     // payload.sub (또는 백엔드에서 JWT 생성 시 사용한 사용자 ID 키)를 사용
     if (!payload || !payload.sub) {
@@ -51,7 +49,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('User not found based on token');
     }
 
-    console.log('JwtStrategy validate successful for user:', user.id);
+    // console.log('JwtStrategy validate successful for user:', user.id);
     // 여기서 반환된 user 객체는 요청 객체(req.user)에 자동으로 첨부됩니다.
     return user;
   }

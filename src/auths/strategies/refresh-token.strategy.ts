@@ -18,10 +18,6 @@ const refreshTokenExtractor = (req: Request): string | null => {
     // 'refreshToken' 쿠키에서 값을 추출합니다. (쿠키 설정 시 사용한 이름)
     token = req.cookies['refreshToken'];
   }
-  console.log(
-    'Refresh Token Cookie Extractor - Token found:',
-    token ? 'Yes' : 'No',
-  );
   return token;
 };
 
@@ -78,9 +74,6 @@ export class RefreshJwtStrategy extends PassportStrategy(
       );
     }
 
-    console.log('Received Refresh Token (Cookie):', refreshTokenFromCookie);
-    console.log('Stored Refresh Token (DB):', user.refreshToken);
-
     // 4. DB에 저장된 Refresh Token과 현재 요청의 Refresh Token 비교
     //    보안 강화: DB에는 해시된 토큰을 저장하고 bcrypt.compare 사용하는 것을 강력히 권장
     // const isTokenMatching = await bcrypt.compare(refreshTokenFromCookie, user.refreshToken);
@@ -88,7 +81,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
     //    (간단한 비교 - DB에 평문 토큰 저장 시. 보안상 권장되지 않음)
     const isTokenMatching = refreshTokenFromCookie === user.refreshToken;
 
-    console.log('isTokenMatching:', isTokenMatching);
+    // console.log('isTokenMatching:', isTokenMatching);
 
     if (!isTokenMatching) {
       // DB의 값과 일치하지 않으면, 유효하지 않은 토큰으로 간주 (탈취 또는 이전 토큰 사용 시도 등)
