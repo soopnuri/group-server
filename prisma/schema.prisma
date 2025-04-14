@@ -25,6 +25,10 @@ model User {
   // 사용자 커뮤니티 역할 목록 one-to-many
   communityRoles UserCommunityRole[]
   posts Post[]
+
+  votes Vote[]
+  comments Comment[]
+
   refreshToken String?
 }
 
@@ -84,6 +88,51 @@ model Post {
   // 게시물이 속한 커뮤니티 Community 모델과 One to Many
   community Community @relation(fields: [communityId], references: [id])
   communityId Int
+
+  votes Vote[]
+  comments Comment[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Vote {
+  id Int @id @default(autoincrement())
+
+  // 투표를 한 사용자 User 모델과 One to Many
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+
+  // 좋아요 1, 싫어요 -1
+  value Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId]) // 게시물 당 한번 투표할 수 있도록 제약
+  @@index([postId]) // postid 기준 검색 자주 발생하므로 인덱스 추가
+  @@index([userId]) // userid 기준 검색 자주 발생하므로 인덱스 추가
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+  text String
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+
+  parentCommentId Int?
+  parentComment Comment? @relation("NestedComments", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("NestedComments")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([postId])
+  @@index([authorId])
 }
