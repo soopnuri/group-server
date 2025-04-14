@@ -107,7 +107,6 @@ export class AuthsService {
 
     const tokens = await this.getTokens(user.id, user.email);
 
-    console.log('tokens-최신업데이트', tokens);
     if (tokens) {
       await this.prisma.user.update({
         where: {
@@ -120,5 +119,16 @@ export class AuthsService {
     }
 
     return { data: tokens };
+  }
+
+  async logout(userId: number) {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        refreshToken: null,
+      },
+    });
   }
 }

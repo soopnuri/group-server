@@ -57,10 +57,8 @@ export class AuthsController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log('refresh/req', req);
     const user = req.user as User;
     const tokens = await this.authsService.refreshToken(+user.id);
-    console.log('refresh/tokes', tokens);
 
     res.cookie('accessToken', tokens.data.accessToken, {
       httpOnly: true,
@@ -91,5 +89,20 @@ export class AuthsController {
   async getUser(@Req() req: Request) {
     const user = req.user as User;
     return await this.authsService.getUser(user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('logout')
+  @ApiOperation({
+    summary: '로그아웃',
+    description: '로그아웃 합니다.',
+  })
+  @ApiResponse({ status: 200, description: '성공' })
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const user = req.user as User;
+    await this.authsService.logout(user.id);
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return { message: '로그아웃 되었습니다.' };
   }
 }

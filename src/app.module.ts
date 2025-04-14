@@ -6,6 +6,7 @@ import { PostsModule } from './posts/posts.module';
 import { CommunitiesModule } from './communities/communities.module';
 import { ConfigModule } from '@nestjs/config';
 // import { LoggerMiddleware } from './common/logger.middleware';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    CommentsModule,
   ],
   controllers: [],
   providers: [],
