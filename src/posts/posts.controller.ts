@@ -14,6 +14,7 @@ import { ApiOperation } from '@nestjs/swagger';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from 'src/auths/strategies/jwt.strategy';
+import { UpdateVoteDto } from './dto/update-vote.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -34,7 +35,7 @@ export class PostsController {
 
   @Get()
   @ApiOperation({ summary: '전체 게시글 가져오기' })
-  findAll() {
+  findAll(): any {
     return this.postsService.findAll();
   }
 
@@ -55,5 +56,16 @@ export class PostsController {
   @ApiOperation({ summary: '포스트 삭제' })
   remove(@Param('id') id: string) {
     return this.postsService.remove(+id);
+  }
+
+  @Post(':id/vote')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '포스트 추천' })
+  vote(@Param('id') postId: string, @Body() updateVoteDto: UpdateVoteDto) {
+    const voteDto = {
+      userId: +updateVoteDto.userId,
+      vote: +updateVoteDto.vote,
+    };
+    return this.postsService.votePost(+postId, voteDto as UpdateVoteDto);
   }
 }

@@ -1,9 +1,9 @@
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class UpdatePostDto {
-  @IsNotEmpty()
-  @IsInt()
-  postId: number;
+  // @IsNotEmpty()
+  // @IsInt()
+  // postId: number;
 
   @IsNotEmpty()
   @IsString()
