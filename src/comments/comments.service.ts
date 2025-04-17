@@ -265,6 +265,87 @@ export class CommentsService {
   }
 
   /**
+   * 특정 게시물 댓글과 대댓글 함께 조회
+   * @param postId 게시물 ID
+   * @param queryDto 페이징 옵션(page, limit)
+   * @returns 게시물의 댓글과 대댓글 목록
+   */
+  async getCommentsAndRepliesByPostId(
+    postId: number,
+    queryDto: { page: number; limit: number },
+  ) {
+    const { page = 1, limit = 10 } = queryDto;
+    const skip = (page - 1) * limit;
+
+    // 1. 게시물 확인
+    const postExists = await this.prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!postExists) {
+      throw new NotFoundException(
+        `ID ${postId}에 해당하는 게시물을 찾을 수 없습니다.`,
+      );
+    }
+
+    // 2.  최상위 댓글만 필터링하는 조건
+    const whereCondition: Prisma.CommentWhereInput = {
+      postId,
+      parentCommentId: null,
+    };
+
+    // 3. 최상위 댓글과 함께 속한 댓글 조회
+    const [comments, totalCount] = await this.prisma.$transaction([
+      this.prisma.comment.findMany({
+        where: whereCondition,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          replies: {
+            include: {
+              // 대댓글 작성자 정보 포함
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+          },
+          _count: {
+            select: {
+              replies: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.comment.count({
+        where: whereCondition,
+      }),
+    ]);
+    return {
+      data: {
+        comments,
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+      },
+    };
+  }
+
+  /**
    * 특정 댓글 삭제
    * @param commentId
    * @param userId

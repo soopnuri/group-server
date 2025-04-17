@@ -11,6 +11,9 @@ import { UpdateVoteDto } from './dto/update-vote.dto';
 interface PostWithVoteScore extends Post {
   voteScore: number;
   community: Community; // include 했으므로 타입 명시
+  _count?: {
+    comments?: number;
+  };
 }
 @Injectable()
 export class PostsService {
@@ -42,6 +45,31 @@ export class PostsService {
         community: {
           select: {
             slug: true,
+          },
+        },
+        comments: {
+          where: { parentCommentId: null },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+            replies: {
+              orderBy: { createdAt: 'asc' },
+              include: {
+                author: {
+                  select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                  },
+                },
+              },
+            },
           },
         },
         author: {
@@ -82,6 +110,11 @@ export class PostsService {
       },
       include: {
         community: true,
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
     });
 

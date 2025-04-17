@@ -34,16 +34,26 @@ export class CommentsController {
     @Req() req: RequestWithUser,
   ) {
     const userId = req.user.id;
-    console.log(userId);
-    return;
     return this.commentsService.createComment(postId, userId, createCommentDto);
+  }
+
+  /**
+   * 특정 게시물 댓글과 대댓글 조회
+   * /posts/:postId/comments?page=1&limit=10
+   */
+  @Get(':postId/with-replies')
+  async getCommentsWithRepliesByPostId(
+    @Param('postId') postId: number,
+    @Query() queryDto: { page: number; limit: number },
+  ) {
+    return this.commentsService.getCommentsAndRepliesByPostId(postId, queryDto);
   }
 
   /**
    * 특정 게시물 최상위 댓글 목록 조회
    * /posts/:postId/comments?page=1&limit=10
    */
-  @Get(':postId/comments')
+  @Get(':postId')
   async getCommentByPostId(
     @Param('postId') postId: number,
     @Query() queryDto: { page: number; limit: number },
@@ -55,7 +65,7 @@ export class CommentsController {
    * 특정 댓글의 대댓글 목록 조회
    * /comments/:commentId/replies?page=1&limit=10
    */
-  @Get('comments/:commentId/replies')
+  @Get(':commentId/replies')
   async getRepliesByParentCommentId(
     @Param('commentId') parentCommentId: number,
     @Query() queryDto: { page: number; limit: number },
