@@ -118,7 +118,7 @@ model Vote {
 
 model Comment {
   id Int @id @default(autoincrement())
-  text String
+  comment String
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId Int

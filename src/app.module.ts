@@ -15,11 +15,11 @@ import { CommentsModule } from './comments/comments.module';
     UsersModule,
     PostsModule,
     CommunitiesModule,
+    CommentsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    CommentsModule,
   ],
   controllers: [],
   providers: [],
