@@ -172,7 +172,7 @@ export class PostsService {
     // 또는 직접 조회:
     const posts = await this.prisma.post.findMany({
       where: { communityId: community.id },
-      include: { community: true },
+      include: { community: true, _count: { select: { comments: true } } },
       orderBy: { createdAt: 'desc' },
     });
 
