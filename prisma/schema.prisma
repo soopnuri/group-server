@@ -16,7 +16,7 @@ generator client {
 
 model User {
   id Int @id @default(autoincrement())
-  googleId String @unique
+  googleId String? @unique
   name String
   email String @unique
   image String?
@@ -25,6 +25,8 @@ model User {
   // 사용자 커뮤니티 역할 목록 one-to-many
   communityRoles UserCommunityRole[]
   posts Post[]
+
+  password String?
 
   votes Vote[]
   comments Comment[]

@@ -1,6 +1,14 @@
-import { Controller, Post, UseGuards, Req, Get, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Req,
+  Get,
+  Res,
+  Body,
+} from '@nestjs/common';
 import { AuthsService } from './auths.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { CreateGoogleAuthDto } from './dto/create-google.auth.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RefreshTokenGuard } from './strategies/refresh-token.strategy';
 import { Request, Response } from 'express';
@@ -8,10 +16,67 @@ import { GoogleAuthGuard } from './strategies/google.strategy';
 import { SkipResponseInterceptor } from 'src/common/skip-response.interceptor';
 import { JwtAuthGuard } from './strategies/jwt.strategy';
 import { User } from '@prisma/client';
+import { CreateAuthDto } from './dto/create-auth.dto';
 
 @Controller('auths')
 export class AuthsController {
   constructor(private readonly authsService: AuthsService) {}
+
+  @Post('signup')
+  @ApiOperation({
+    summary: '회원가입',
+    description: '회원가입을 합니다.',
+  })
+  @ApiResponse({ status: 200, description: '성공', type: CreateAuthDto })
+  async signup(@Body() createAuthDto: CreateAuthDto) {
+    return await this.authsService.signup(createAuthDto);
+  }
+
+  @Post('login')
+  @ApiOperation({
+    summary: '로그인',
+    description: '로그인을 합니다.',
+  })
+  @ApiResponse({ status: 200, description: '성공', type: CreateAuthDto })
+  async login(@Body() createAuthDto: CreateAuthDto, @Res() res: Response) {
+    const user = await this.authsService.login(createAuthDto);
+
+    if (!user?.data)
+      return res.status(401).json({
+        message: '비밀번호가 일치하지 않습니다.',
+        data: {
+          user: user.data,
+        },
+      });
+
+    const tokens = await this.authsService.getTokens(
+      user.data.id,
+      user.data.email,
+    );
+
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60,
+      path: '/',
+    });
+
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      path: '/',
+    });
+
+    return res.status(201).json({
+      message: '로그인에 성공했습니다.',
+      data: {
+        user: user.data,
+      },
+    });
+  }
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
@@ -25,13 +90,15 @@ export class AuthsController {
   @UseGuards(GoogleAuthGuard)
   @SkipResponseInterceptor()
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-    const tokens = await this.authsService.create(req.user as CreateAuthDto);
+    const tokens = await this.authsService.create(
+      req.user as CreateGoogleAuthDto,
+    );
 
     res.cookie('accessToken', tokens.accessToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 2,
+      maxAge: 1000 * 60 * 60,
       path: '/',
     });
 
@@ -64,7 +131,7 @@ export class AuthsController {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 2,
+      maxAge: 1000 * 60 * 60,
       path: '/',
     });
 

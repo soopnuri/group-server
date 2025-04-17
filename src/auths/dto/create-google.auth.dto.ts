@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
-export class CreateAuthDto {
+export class CreateGoogleAuthDto {
   @ApiProperty({ name: 'googleId', description: '사용자 구글 UUID' })
+  googleId: string;
+
+  @ApiProperty({ name: 'name', description: '이름' })
+  @IsString()
   name: string;
 
   @ApiProperty({ name: 'email', description: '이메일' })
@@ -15,5 +19,11 @@ export class CreateAuthDto {
   email: string;
 
   @IsString()
-  password: string;
+  @IsOptional()
+  @ApiProperty({
+    name: 'image',
+    description: '사용자 프로필 이미지',
+    required: false,
+  })
+  image: string;
 }
